@@ -17,8 +17,7 @@
 package uk.ac.cam.ahk44.alice;
 
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.stream.IntStream;
 
 public class Alice {
 
@@ -67,10 +66,12 @@ public class Alice {
     List<Map.Entry<T, Long>> items = new ArrayList<>(frequencies.entrySet());
     items.sort(Map.Entry.<T, Long>comparingByValue().reversed());
     Iterator<Map.Entry<T, Long>> iterator = items.iterator();
-    List<T> result;
+    List<T> result = new ArrayList<>();
 
-    Stream<Integer> integers = Stream.iterate(0, i -> i + 1);
-    result = integers.limit(size).filter(i -> iterator.hasNext()).map(i -> iterator.next().getKey()).collect(Collectors.toList());
+
+    IntStream.iterate(0, i -> i + 1).limit(size).forEach(i -> {
+      if(iterator.hasNext()) result.add(iterator.next().getKey());
+    });
     return result;
   }
 
