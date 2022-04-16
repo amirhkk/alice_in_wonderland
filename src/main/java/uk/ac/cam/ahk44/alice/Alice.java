@@ -26,13 +26,8 @@ public class Alice {
 
   /** Return the number of tokens whose contents is a word. */
   static long countWords(List<Token> tokens) {
-    long counter = 0;
-    for (Token t : tokens) {
-      if (!t.isWord()) {
-        continue;
-      }
-      counter++;
-    }
+    long counter;
+    counter = tokens.stream().filter(t -> t.isWord()).count();
     return counter;
   }
 
