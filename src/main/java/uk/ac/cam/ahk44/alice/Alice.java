@@ -67,10 +67,10 @@ public class Alice {
     items.sort(Map.Entry.<T, Long>comparingByValue().reversed());
     Iterator<Map.Entry<T, Long>> iterator = items.iterator();
     List<T> result = new ArrayList<>();
-
-
-    IntStream.iterate(0, i -> i + 1).limit(size).forEach(i -> {
-      if(iterator.hasNext()) result.add(iterator.next().getKey());
+    items.stream().limit(size).forEach(i -> {
+      if(iterator.hasNext()){
+        result.add(iterator.next().getKey());
+      }
     });
     return result;
   }
