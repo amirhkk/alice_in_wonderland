@@ -16,11 +16,9 @@
 
 package uk.ac.cam.ahk44.alice;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Alice {
 
@@ -40,11 +38,7 @@ public class Alice {
    */
   static List<String> properNouns(List<Token> tokens, int size) {
     Map<String, Long> nounCount = new HashMap<>();
-    for (Token t : tokens) {
-      if (!t.partOfSpeech().equals("NNP")) continue;
-      String word = t.contents();
-      nounCount.put(word, nounCount.getOrDefault(word, 0L) + 1);
-    }
+    tokens.stream().filter(t -> t.partOfSpeech().equals("NNP")).map(Token::contents).forEach(word -> nounCount.put(word, nounCount.getOrDefault(word, 0L) + 1));
     return topN(size, nounCount);
   }
 
@@ -57,11 +51,7 @@ public class Alice {
    */
   static List<String> vocabulary(List<Token> tokens, int size) {
     Map<String, Long> frequencyCount = new HashMap<>();
-    for (Token t : tokens) {
-      if (!t.isWord()) continue;
-      String word = t.contents().toLowerCase();
-      frequencyCount.put(word, frequencyCount.getOrDefault(word, 0L) + 1);
-    }
+    tokens.stream().filter(Token::isWord).map(t -> t.contents().toLowerCase()).forEach(word -> frequencyCount.put(word, frequencyCount.getOrDefault(word, 0L) + 1));
     return topN(size, frequencyCount);
   }
 
@@ -77,10 +67,10 @@ public class Alice {
     List<Map.Entry<T, Long>> items = new ArrayList<>(frequencies.entrySet());
     items.sort(Map.Entry.<T, Long>comparingByValue().reversed());
     Iterator<Map.Entry<T, Long>> iterator = items.iterator();
-    List<T> result = new ArrayList<>();
-    while (size-- > 0 && iterator.hasNext()) {
-      result.add(iterator.next().getKey());
-    }
+    List<T> result;
+
+    Stream<Integer> integers = Stream.iterate(0, i -> i + 1);
+    result = integers.limit(size).filter(i -> iterator.hasNext()).map(i -> iterator.next().getKey()).collect(Collectors.toList());
     return result;
   }
 
@@ -89,12 +79,7 @@ public class Alice {
    * provided.
    */
   static Token leastConfidentToken(List<Token> tokens) {
-    Token min = null;
-    for (Token t : tokens) {
-      if (min == null || t.confidence() < min.confidence()) {
-        min = t;
-      }
-    }
+    Token min = tokens.stream().min(Comparator.comparingDouble(Token::confidence)).orElse(null);
     return min;
   }
 
@@ -106,10 +91,7 @@ public class Alice {
    */
   static Map<String, Long> posFrequencies(List<Token> tokens) {
     Map<String, Long> freq = new HashMap<>();
-    for (Token t : tokens) {
-      String pos = t.partOfSpeech();
-      freq.put(pos, freq.getOrDefault(pos, 0L) + 1);
-    }
+    tokens.stream().map(Token::partOfSpeech).forEach(pos -> freq.put(pos, freq.getOrDefault(pos, 0L) + 1));
     return freq;
   }
 }
