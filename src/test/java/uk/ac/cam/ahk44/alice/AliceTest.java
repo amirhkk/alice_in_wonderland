@@ -35,7 +35,7 @@ public class AliceTest {
     // ACT
     long count = Alice.countWords(words);
 
-    // ASSEERT
+    // ASSERT
     assertThat(count).isEqualTo(0);
   }
 
@@ -47,8 +47,42 @@ public class AliceTest {
     // ACT
     long count = Alice.countWords(words);
 
-    // ASSEERT
+    // ASSERT
     assertThat(count).isEqualTo(0);
+  }
+
+  @Test
+  public void countWords_actually_counts() {
+    // ARRANGE
+    List<Token> words =
+            List.of(
+                    new Token("Alice", "NNP", 1.0),
+                    new Token("alice", "NNP", 1.0),
+                    new Token("Queen", "NNP", 1.0),
+                    new Token("?", "NNP", 1.0),
+                    new Token("King", "NNP", 1.0));
+
+    // ACT
+    long count = Alice.countWords(words);
+
+    // ASSERT
+    assertThat(count).isEqualTo(4);
+  }
+
+  @Test
+  public void properNoun_only_counts_nouns() {
+    // ARRANGE
+    List<Token> words =
+            List.of(
+                    new Token("Alice", "NNP", 1.0),
+                    new Token("King", "NNP", 1.0),
+                    new Token("Queen", "Queen", 1.0));
+
+    // ACT
+    List<String> vocab = Alice.properNouns(words, 5);
+
+    // ASSERT
+    assertThat(vocab).containsExactly("Alice", "King");
   }
 
   @Test
@@ -67,6 +101,23 @@ public class AliceTest {
 
     // ASSERT
     assertThat(vocab).containsExactly("alice", "king");
+  }
+
+  @Test
+  public void vocabulary_ignores_nonwords() {
+    // ARRANGE
+    List<Token> words =
+            List.of(
+                    new Token("Alice", "NNP", 1.0),
+                    new Token("Compsci", "CS", 1.0),
+                    new Token("Cambridge", "Cam", 1.0),
+                    new Token(",", "comma", 1.0));
+
+    // ACT
+    List<String> vocab = Alice.vocabulary(words, 5);
+
+    // ASSERT
+    assertThat(vocab).containsExactly("alice", "compsci", "cambridge");
   }
 
   @Test
@@ -104,5 +155,53 @@ public class AliceTest {
 
     // ASSERT
     assertThat(string).isEqualTo(String.format("Alice(NNP:%.1f)", 1.9));
+  }
+
+  @Test
+  public void leastConfidentToken_Returns_null_forempty() {
+    // ARRANGE
+    List<Token> words = List.of();
+
+    // ACT
+    Token leastconf = Alice.leastConfidentToken(words);
+
+    // ASSERT
+    assertThat(leastconf).isEqualTo(null);
+  }
+
+  @Test
+  public void leastConfidentToken_Returns_leastconfident() {
+    // ARRANGE
+    List<Token> words =
+            List.of(
+                    new Token("Alice", "NNP", -4.0),
+                    new Token("Compsci", "CS", 1.0),
+                    new Token("Cambridge", "Cam", 0.0),
+                    new Token(",", "comma", 0.2342));
+
+    // ACT
+    String string = Alice.leastConfidentToken(words).toString();
+
+    // ASSERT
+    assertThat(string).isEqualTo(String.format("Alice(NNP:%.1f)", -4.0));
+  }
+
+  @Test
+  public void posfrequencies_works() {
+    // ARRANGE
+    Map<String, Long> frequencies = Map.of("Cambridge", 3L, "Oxford", 2L);
+    List<Token> words =
+            List.of(
+                    new Token("compsci", "Cambridge", -4.0),
+                    new Token("compsci", "Oxford", 1.0),
+                    new Token("compsci", "Cambridge", 1.0),
+                    new Token("theology", "Cambridge", 0.0),
+                    new Token("medic", "Oxford", 0.2342));
+
+    // ACT
+    Map<String, Long> frequencies2 = Alice.posFrequencies(words);
+
+    // ASSERT
+    assertThat(frequencies2).isEqualTo(frequencies);
   }
 }

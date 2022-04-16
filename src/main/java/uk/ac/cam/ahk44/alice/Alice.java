@@ -46,9 +46,7 @@ public class Alice {
   static List<String> properNouns(List<Token> tokens, int size) {
     Map<String, Long> nounCount = new HashMap<>();
     for (Token t : tokens) {
-      if (!t.partOfSpeech().equals("NNP")) {
-        continue;
-      }
+      if (!t.partOfSpeech().equals("NNP")) continue;
       String word = t.contents();
       nounCount.put(word, nounCount.getOrDefault(word, 0L) + 1);
     }
@@ -65,9 +63,7 @@ public class Alice {
   static List<String> vocabulary(List<Token> tokens, int size) {
     Map<String, Long> frequencyCount = new HashMap<>();
     for (Token t : tokens) {
-      if (!t.isWord()) {
-        continue;
-      }
+      if (!t.isWord()) continue;
       String word = t.contents().toLowerCase();
       frequencyCount.put(word, frequencyCount.getOrDefault(word, 0L) + 1);
     }
