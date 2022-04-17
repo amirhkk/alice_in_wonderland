@@ -64,7 +64,7 @@ public class Alice {
    */
   static <T> List<T> topN(int size, Map<T, Long> frequencies) {
     List<Map.Entry<T, Long>> items = new ArrayList<>(frequencies.entrySet());
-    items.sort(Map.Entry.<T, Long>comparingByValue().reversed());
+    //items.sort(Map.Entry.<T, Long>comparingByValue().reversed());
 
     List<T> result = new ArrayList<>();
     items.stream().limit(size).forEach(i -> result.add(i.getKey()));
