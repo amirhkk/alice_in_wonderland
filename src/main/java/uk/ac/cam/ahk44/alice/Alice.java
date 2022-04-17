@@ -65,8 +65,10 @@ public class Alice {
    */
   static <T> List<T> topN(int size, Map<T, Long> frequencies) {
 
-    Map<T, Long> treeMap = new TreeMap<T, Long>(frequencies);
-    List<T> result = treeMap.keySet().stream().limit(size).collect(Collectors.toList());
+    List<T> result = frequencies.entrySet().stream()
+            .sorted(Map.Entry.<T, Long>comparingByValue().reversed())
+            .map(Map.Entry::getKey).limit(size)
+            .collect(Collectors.toList());
     return result;
   }
 
