@@ -17,6 +17,7 @@
 package uk.ac.cam.ahk44.alice;
 
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class Alice {
@@ -65,13 +66,7 @@ public class Alice {
   static <T> List<T> topN(int size, Map<T, Long> frequencies) {
 
     Map<T, Long> treeMap = new TreeMap<T, Long>(frequencies);
-
-
-    //List<Map.Entry<T, Long>> items = new ArrayList<>(frequencies.entrySet());
-    //items.sort(Map.Entry.<T, Long>comparingByValue().reversed());
-
-    List<T> result = new ArrayList<>();
-    treeMap.keySet().stream().limit(size).forEach(i -> result.add(i));
+    List<T> result = treeMap.keySet().stream().limit(size).collect(Collectors.toList());
     return result;
   }
 
